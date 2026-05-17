@@ -35,6 +35,7 @@ namespace ApartmanYonetim.DAL
                 conn.Open();
                 cmd.ExecuteNonQuery();
             }
+
         }
 
         // ─── DAİREYE GÖRE BORÇLARI GETİR ─────────────────────────────────────

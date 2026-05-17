@@ -120,6 +120,7 @@
             this.Resim_pb.Location = new System.Drawing.Point(438, 43);
             this.Resim_pb.Name = "Resim_pb";
             this.Resim_pb.Size = new System.Drawing.Size(161, 120);
+            this.Resim_pb.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.Resim_pb.TabIndex = 11;
             this.Resim_pb.TabStop = false;
             // 

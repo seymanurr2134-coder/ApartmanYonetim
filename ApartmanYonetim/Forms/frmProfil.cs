@@ -16,6 +16,8 @@ namespace ApartmanYonetim.Forms
 {
     public partial class frmProfil : Form
     {
+        // DAL sınıfımızdan bir nesne üretiyoruz
+        ProfilModelDal profilDal = new ProfilModelDal();
         public frmProfil()
         {
             InitializeComponent();
@@ -23,31 +25,50 @@ namespace ApartmanYonetim.Forms
 
         private void btnBilgileriGuncelle_Click(object sender, EventArgs e)
         {
-            // 1. Önce modelimizi formdaki güncel bilgilerle dolduruyoruz
+            // 1. Modelimizi oluşturuyoruz
             ProfilModel guncelModel = new ProfilModel
             {
                 AdSoyad = txtAdSoyad.Text,
                 Telefon = txtTelefon.Text,
-                Email = txtMail.Text
+                Email = txtMail.Text,
+                Resim = null
             };
 
-            // PictureBox'taki resmi byte dizisine çevirme (Eğer resim değiştiyse)
+            // 2. Eğer PictureBox'ta bir resim varsa GDI+ hatası almadan çeviriyoruz
             if (Resim_pb.Image != null)
             {
-                using (var ms = new System.IO.MemoryStream())
+                try
                 {
-                    Resim_pb.Image.Save(ms, Resim_pb.Image.RawFormat);
-                    guncelModel.Resim = ms.ToArray();
+                    // --- GDI+ HATASINI %100 ÇÖZEN SİHİRLİ DOKUNUŞ ---
+                    // Mevcut kilitli resmi doğrudan kaydetmek yerine, 
+                    // onun piksellerini kullanarak RAM'de sıfır, tertemiz bir kopyasını üretiyoruz.
+                    // Bu sayede eski stream bağları tamamen kopuyor!
+                    using (Bitmap yeniKopyaResim = new Bitmap(Resim_pb.Image))
+                    {
+                        using (var ms = new System.IO.MemoryStream())
+                        {
+                            // Artık kilitli olmayan bağımsız kopyayı kaydediyoruz:
+                            yeniKopyaResim.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
+                            guncelModel.Resim = ms.ToArray();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Resim işlenirken teknik bir hata oluştu: " + ex.Message);
                 }
             }
 
-            // 2. DAL üzerinden veritabanına gönderiyoruz
+            // 3. DAL sınıfımızı çağırıp güncelliyoruz
             ProfilModelDal dal = new ProfilModelDal();
-            bool basarili = dal.ProfilGuncelle(guncelModel, AktifKullaniciId);
+            bool basarili = dal.ProfilGuncelle(guncelModel, Program.AktifKullaniciId);
 
             if (basarili)
             {
                 MessageBox.Show("Profiliniz başarıyla güncellendi!", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Formu veritabanından gelen en güncel verilerle tazeliyoruz
+                ProfiliveritabanindanYukle();
             }
             else
             {
@@ -63,10 +84,18 @@ namespace ApartmanYonetim.Forms
 
         private void frmProfil_Load(object sender, EventArgs e)
         {
+            // Sayfa her açıldığında veritabanından güncel bilgileri yükle diyoruz
+            ProfiliveritabanindanYukle();
+
+            if (Program.AktifKullaniciId <= 0)
+            {
+                MessageBox.Show("HATA: Giriş yapan kullanıcının ID'si bulunamadı! Mevcut ID: " + Program.AktifKullaniciId);
+                return;
+            }
+
             ProfilModelDal profilDal = new ProfilModelDal();
             // AktifKullaniciId'nin dolu olduğundan emin ol (Örn: giriş sayfasından gelen ID)
-            var veriler = profilDal.ProfilBilgileriniGetir(AktifKullaniciId);
-
+            var veriler = profilDal.ProfilBilgileriniGetir(Program.AktifDaireId);
             if (veriler != null)
             {
                 // Yazılı bilgileri kutucuklara doldur
@@ -99,17 +128,58 @@ namespace ApartmanYonetim.Forms
                     Resim_pb.Image = null;
                 }
             }
+            else
+            {
+                MessageBox.Show("HATA: Veritabanında ID'si " + Program.AktifKullaniciId + " olan bir daire bulunamadı!");
+            }
+        }
+
+        public void ProfiliveritabanindanYukle()
+        {
+            int daireId = Program.AktifKullaniciId;
+            ProfilModelDal profilDal = new ProfilModelDal();
+            ProfilModel guncelProfil = profilDal.ProfilBilgileriniGetir(daireId);
+
+            if (guncelProfil != null)
+            {
+                txtAdSoyad.Text = guncelProfil.AdSoyad;
+                txtTelefon.Text = guncelProfil.Telefon;
+                txtMail.Text = guncelProfil.Email;
+                txtDaire.Text = "Daire No: " + guncelProfil.DaireNo;
+
+                if (guncelProfil.Resim != null && guncelProfil.Resim.Length > 0)
+                {
+                    using (MemoryStream ms = new MemoryStream(guncelProfil.Resim))
+                    {
+                        // --- İŞTE GDI+ HATASINI ÇÖZEN DEĞİŞİKLİK ---
+                        // Image.FromStream yerine yeni bir Bitmap nesnesi üreterek 
+                        // stream kapansa bile resmin RAM'de bağımsız yaşamasını sağlıyoruz.
+                        Resim_pb.Image = new Bitmap(ms);
+                    }
+                }
+                else
+                {
+                    Resim_pb.Image = null;
+                }
+            }
         }
 
         private void btnResimEkle_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "Resim Dosyaları (*.jpg, *.jpeg, *.png)|*.jpg;*.jpeg;*.png";
 
             if (ofd.ShowDialog() == DialogResult.OK)
             {
-                Resim_pb.Image = Image.FromFile(ofd.FileName);
+                // Dosyayı byte dizisi olarak okuyup dosyayı hemen serbest bırakıyoruz
+                byte[] imageBytes = System.IO.File.ReadAllBytes(ofd.FileName);
+                using (MemoryStream ms = new MemoryStream(imageBytes))
+                {
+                    // Yine bağımsız bir Bitmap kopyası oluşturup atıyoruz
+                    Resim_pb.Image = new Bitmap(ms);
+                }
             }
-        
     }
     }
-}
+    }
+

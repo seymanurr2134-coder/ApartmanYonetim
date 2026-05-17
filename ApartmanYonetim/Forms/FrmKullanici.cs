@@ -7,9 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ApartmanYonetim.Models;
 
 namespace ApartmanYonetim.Forms
 {
+   
     public partial class FrmKullanici : Form
     {
         public FrmKullanici()
@@ -51,12 +53,18 @@ namespace ApartmanYonetim.Forms
 
         private void btnBorclar_Click(object sender, EventArgs e)
         {
-            FormYukle(new frmBorclarim());
+            var frm = new frmBorclarim();
+            // Form yüklenmeden hemen önce verileri Program.AktifKullaniciId kullanarak çekmesini tetikleyeceğiz.
+            // Eğer alt formda (frmBorclarim) "VerileriGetir" gibi bir metodun varsa onu burada çağır:
+            // frm.VerileriGetir(Program.AktifKullaniciId); 
+            FormYukle(frm);
         }
 
         private void btnGecmisOdemeler_Click(object sender, EventArgs e)
         {
-            FormYukle(new frmGecmisOdemeler());
+            var frm = new frmGecmisOdemeler();
+            // frm.GecmisYukle(Program.AktifKullaniciId);
+            FormYukle(frm);
         }
 
         private void btnDuyurular_Click(object sender, EventArgs e)
@@ -64,10 +72,14 @@ namespace ApartmanYonetim.Forms
             FormYukle(new frmDuyurular());
 
         }
+         
 
         private void btnProfil_Click(object sender, EventArgs e)
         {
-            FormYukle(new frmProfil());
+            var frm = new frmProfil();
+            // Profil formuna her tıklandığında hafızadaki güncel ID'yi gönderiyoruz.
+            // frm.ProfilYukle(Program.AktifKullaniciId);
+            FormYukle(frm);
 
 
         }

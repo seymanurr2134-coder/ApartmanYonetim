@@ -62,8 +62,8 @@ namespace ApartmanYonetim.DAL
             }
         }
         */
-        
-        
+
+
 
 
         public Kullanici Login(string email, string sifre)
@@ -72,7 +72,7 @@ namespace ApartmanYonetim.DAL
             {
                 conn.Open();
 
-                string query = "SELECT * FROM Kullanicilar WHERE Email=@email AND Sifre=@sifre";
+                string query = "SELECT k.*, d.Id AS DaireTabloId, d.DaireNo, k.KullaniciAdi FROM Kullanicilar k LEFT JOIN Daireler d ON k.DaireId = d.Id WHERE k.Email = @email AND k.Sifre = @sifre";
                 SqlCommand cmd = new SqlCommand(query, conn);
 
                 cmd.Parameters.AddWithValue("@email", email);
@@ -83,12 +83,13 @@ namespace ApartmanYonetim.DAL
                 {
                     return new Kullanici
                     {
-                        Id = (int)dr["Id"],
-                        KullaniciAdi = dr["KullaniciAdi"].ToString(),
-                        Sifre = dr["Sifre"].ToString(),
-                        Rol = dr["Rol"].ToString(),
-                        DaireId = Convert.ToInt32(dr["DaireId"]),
-                        Email= dr["Email"].ToString()
+                        // DBNull kontrolü: Eğer veritabanında boşsa 0 atar, doluysa çevirir.
+                        Id = dr["DaireTabloId"] == DBNull.Value ? 0 : Convert.ToInt32(dr["DaireTabloId"]),
+                        KullaniciAdi = dr["KullaniciAdi"]?.ToString() ?? "",
+                        Sifre = dr["Sifre"]?.ToString() ?? "",
+                        Rol = dr["Rol"]?.ToString() ?? "",
+                        DaireId = dr["DaireId"] == DBNull.Value ? 0 : Convert.ToInt32(dr["DaireId"]),
+                        Email = dr["Email"]?.ToString() ?? ""
                     };
                 }
                 else
@@ -97,17 +98,17 @@ namespace ApartmanYonetim.DAL
                 }
             }
         }
-        public void KullaniciEkle(string email, string sifre, int daireId)
+        public void KullaniciEkle(string kullaniciAdi, string email, string sifre, int daireId)
         {
             using (SqlConnection conn = db.GetConnection())
             {
                 conn.Open();
 
-                string query = "INSERT INTO Kullanicilar (Sifre,Rol,DaireId,Email) VALUES (@sifre,'Kullanici',@daireId, @email)";
+                string query = "INSERT INTO Kullanicilar (KullaniciAdi,Sifre,Rol,DaireId,Email) VALUES (@kullaniciAdi,@sifre,'Kullanici',@daireId, @email)";
 
                 SqlCommand cmd = new SqlCommand(query, conn);
 
-               
+                cmd.Parameters.AddWithValue("@kullaniciAdi", kullaniciAdi);
                 cmd.Parameters.AddWithValue("@email", email);
                 cmd.Parameters.AddWithValue("@sifre", sifre);
                 cmd.Parameters.AddWithValue("@daireId", daireId);
@@ -115,15 +116,16 @@ namespace ApartmanYonetim.DAL
                 cmd.ExecuteNonQuery();
             }
         }
-        public bool SifreDegistir(int kullaniciId, string eskiSifre, string yeniSifre)
+        public bool SifreDegistir(string email, string eskiSifre, string yeniSifre)
         {
             using (SqlConnection conn = db.GetConnection())
             {
                 conn.Open();
 
-                string kontrol = "SELECT COUNT(*) FROM Kullanicilar WHERE Id=@id AND Sifre=@eski";
+                // Id yerine doğrudan Email üzerinden kontrol yapıyoruz
+                string kontrol = "SELECT COUNT(*) FROM Kullanicilar WHERE Email=@email AND Sifre=@eski";
                 SqlCommand cmdKontrol = new SqlCommand(kontrol, conn);
-                cmdKontrol.Parameters.AddWithValue("@id", kullaniciId);
+                cmdKontrol.Parameters.AddWithValue("@email", email);
                 cmdKontrol.Parameters.AddWithValue("@eski", eskiSifre);
 
                 int sayi = (int)cmdKontrol.ExecuteScalar();
@@ -131,10 +133,11 @@ namespace ApartmanYonetim.DAL
                 if (sayi == 0)
                     return false;
 
-                string update = "UPDATE Kullanicilar SET Sifre=@yeni WHERE Id=@id";
+                // Güncellemeyi de yine Email'e göre yapıyoruz
+                string update = "UPDATE Kullanicilar SET Sifre=@yeni WHERE Email=@email";
                 SqlCommand cmdUpdate = new SqlCommand(update, conn);
                 cmdUpdate.Parameters.AddWithValue("@yeni", yeniSifre);
-                cmdUpdate.Parameters.AddWithValue("@id", kullaniciId);
+                cmdUpdate.Parameters.AddWithValue("@email", email);
 
                 cmdUpdate.ExecuteNonQuery();
 

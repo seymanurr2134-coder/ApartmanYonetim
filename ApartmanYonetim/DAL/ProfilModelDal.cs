@@ -25,12 +25,11 @@ namespace ApartmanYonetim.DAL
             using (SqlConnection conn = new SqlConnection(conString))
             {
                 // Doğrudan Daireler tablosuna gidiyoruz, kimseyle birleşmiyoruz!
-                string query = @"SELECT [AdSoyad], [Telefon], [Email], [Resim], [DaireNo] 
-                         FROM [Daireler] 
-                         WHERE [Id] = @id";
+                // DAL içindeki sorgu:
+                string query = "SELECT * FROM Daireler WHERE Id = @id";
 
                 SqlCommand cmd = new SqlCommand(query, conn);
-                cmd.Parameters.AddWithValue("@id", daireId); // Buraya kendi daire ID'ni gönderiyoruz
+                cmd.Parameters.AddWithValue("@id", daireId); 
 
                 conn.Open();
                 SqlDataReader dr = cmd.ExecuteReader();
@@ -47,7 +46,8 @@ namespace ApartmanYonetim.DAL
                         // DaireNo veritabanında sayıysa 0, yazıysa "" veriyoruz
                         DaireNo = dr["DaireNo"] != DBNull.Value ? Convert.ToInt32(dr["DaireNo"]) : 0,
                         // Resim kolonu için tip kontrolü ekleyelim
-                        Resim = (dr["Resim"] is byte[] resimDizisi) ? resimDizisi : null
+                        //Resim = (dr["Resim"] is byte[] resimDizisi) ? resimDizisi : null
+                        Resim = (dr["Resim"] is byte[] data) ? data : null
                     };
                 }
             }
@@ -70,11 +70,8 @@ namespace ApartmanYonetim.DAL
                 cmd.Parameters.AddWithValue("@mail", model.Email);
                 cmd.Parameters.AddWithValue("@id", kullaniciId);
 
-                // Resim null ise DBNull göndermeliyiz
-                if (model.Resim != null)
-                    cmd.Parameters.AddWithValue("@resim", model.Resim);
-                else
-                    cmd.Parameters.AddWithValue("@resim", DBNull.Value);
+                // SqlDbType.VarBinary ve -1 (MAX) kullanarak SQL'e verinin boyutunu dert etmemesini söylüyoruz.
+                cmd.Parameters.Add("@resim", SqlDbType.VarBinary, -1).Value = (object)model.Resim ?? DBNull.Value;
 
                 conn.Open();
                 int sonuc = cmd.ExecuteNonQuery();

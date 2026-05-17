@@ -14,6 +14,8 @@ namespace ApartmanYonetim.Forms
 {
     public partial class FrmAidat : Form
     {
+        
+        private readonly BorcDal _borcDal = new BorcDal(); 
         private readonly AidatDal _dal = new AidatDal();
         private int _seciliId = -1; // Düzenleme modunda seçili kayıt
         public FrmAidat()
@@ -165,6 +167,23 @@ namespace ApartmanYonetim.Forms
 
             if (basarili)
             {
+                try
+                {
+                    // En son eklediğimiz aidatın ID'sini almamız gerekiyor
+                    DataTable dt = _dal.TumAidatlariGetir();
+                    // Genelde en son eklenen en üstte (Rows[0]) olur
+                    int yeniAidatId = Convert.ToInt32(dt.Rows[0]["Id"]);
+
+                    // Tüm daireleri bu AidatId ile borçlandırıyoruz
+                    _borcDal.TumDairelereBorcEkle(yeniAidatId, ay, yil, tutar, dtpSonOdemeTarihi.Value);
+
+                    MessageBox.Show($"{ay}/{yil} aidatı oluşturuldu ve tüm daireler borçlandırıldı!", "Başarılı",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Aidat oluşturuldu ama borçlandırma sırasında hata oluştu: " + ex.Message);
+                }
                 MessageBox.Show($"{ay}/{yil} için aidat başarıyla oluşturuldu!", "Başarılı",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 FormuTemizle();

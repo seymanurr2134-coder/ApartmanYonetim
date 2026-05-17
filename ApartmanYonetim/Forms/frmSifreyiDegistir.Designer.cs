@@ -121,6 +121,7 @@
             this.Controls.Add(this.txtEskiSifre);
             this.Name = "frmSifreyiDegistir";
             this.Text = "frmSifreyiDegistir";
+            this.Load += new System.EventHandler(this.frmSifreyiDegistir_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

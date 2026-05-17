@@ -60,16 +60,38 @@ namespace ApartmanYonetim.DAL
         }
 
         // ─── AİDAT SİL ───────────────────────────────────────────────────────
-        public void AidatSil(int id)
+        public void AidatSil(int aidatId)
         {
-            string sql = "DELETE FROM Aidatlar WHERE Id = @Id";
-
             using (SqlConnection conn = _db.GetConnection())
-            using (SqlCommand cmd = new SqlCommand(sql, conn))
             {
-                cmd.Parameters.AddWithValue("@Id", id);
                 conn.Open();
-                cmd.ExecuteNonQuery();
+                SqlTransaction trans = conn.BeginTransaction(); // İşlemi sağlama alalım
+
+                try
+                {
+                    // 1. ÖNCE: O aidata bağlı olan tüm borçları Borclar tablosundan sil
+                    string borcSilSql = "DELETE FROM Borclar WHERE AidatId = @AidatId";
+                    using (SqlCommand cmdBorc = new SqlCommand(borcSilSql, conn, trans))
+                    {
+                        cmdBorc.Parameters.AddWithValue("@AidatId", aidatId);
+                        cmdBorc.ExecuteNonQuery();
+                    }
+
+                    // 2. SONRA: Ana aidat tanımını Aidatlar tablosundan sil
+                    string aidatSilSql = "DELETE FROM Aidatlar WHERE Id = @Id";
+                    using (SqlCommand cmdAidat = new SqlCommand(aidatSilSql, conn, trans))
+                    {
+                        cmdAidat.Parameters.AddWithValue("@Id", aidatId);
+                        cmdAidat.ExecuteNonQuery();
+                    }
+
+                    trans.Commit(); // Her şey tamamsa onayla
+                }
+                catch (Exception)
+                {
+                    trans.Rollback(); // Bir hata olursa hiçbir şeyi silme, geri al
+                    throw;
+                }
             }
         }
 

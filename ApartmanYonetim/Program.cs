@@ -12,6 +12,7 @@ namespace ApartmanYonetim
         public static string AktifKullaniciAdSoyad;
         public static int AktifKullaniciId;
         public static int AktifDaireId;
+        public static string AktifKullaniciEmail { get; set; }
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -27,6 +28,7 @@ namespace ApartmanYonetim
             public static int Id;
             public static string AdSoyad;
             public static string Email;
+           
         }
 
     }

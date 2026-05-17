@@ -20,7 +20,7 @@ namespace ApartmanYonetim.Forms
 
         private void btnSifreDegistir_Click(object sender, EventArgs e)
         {
-            
+            MessageBox.Show(Program.AktifKullaniciId.ToString());
 
             string eskiSifre = txtEskiSifre.Text.Trim();
             string yeniSifre = txtYeniSifre.Text.Trim();
@@ -44,8 +44,7 @@ namespace ApartmanYonetim.Forms
 
             KullaniciDAL dal = new KullaniciDAL();
 
-            bool sonuc = dal.SifreDegistir(Program.AktifKullaniciId, eskiSifre, yeniSifre);
-
+            bool sonuc = dal.SifreDegistir(Program.AktifKullaniciEmail, eskiSifre, yeniSifre);
             if (sonuc)
             {
                 MessageBox.Show("Şifre başarıyla değiştirildi.");
@@ -58,6 +57,11 @@ namespace ApartmanYonetim.Forms
             {
                 MessageBox.Show("Eski şifre yanlış!");
             }
+        }
+
+        private void frmSifreyiDegistir_Load(object sender, EventArgs e)
+        {
+
         }
     }
     }

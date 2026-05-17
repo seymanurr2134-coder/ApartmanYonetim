@@ -28,19 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.lblHosgeldin = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label5 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.btnOdemeYap = new System.Windows.Forms.Button();
             this.lblBorc = new System.Windows.Forms.Label();
-            this.dataGridViewOdemeler = new System.Windows.Forms.DataGridView();
-            this.colAy = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colYil = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colTutar = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.colDurum = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.panel3 = new System.Windows.Forms.Panel();
-            this.label7 = new System.Windows.Forms.Label();
             this.panel4 = new System.Windows.Forms.Panel();
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -50,26 +42,16 @@
             this.panel6 = new System.Windows.Forms.Panel();
             this.label8 = new System.Windows.Forms.Label();
             this.pnlDuyuru = new System.Windows.Forms.Panel();
-            this.lblDuyuru = new System.Windows.Forms.Label();
+            this.linkDuyuru1 = new System.Windows.Forms.LinkLabel();
+            this.linkDuyuru2 = new System.Windows.Forms.Label();
             this.lblDaireBilgi = new System.Windows.Forms.Label();
+            this.lblHosgeldin = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewOdemeler)).BeginInit();
-            this.panel3.SuspendLayout();
             this.panel4.SuspendLayout();
             this.panel5.SuspendLayout();
             this.pnlDuyuru.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // lblHosgeldin
-            // 
-            this.lblHosgeldin.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblHosgeldin.Location = new System.Drawing.Point(13, 13);
-            this.lblHosgeldin.Name = "lblHosgeldin";
-            this.lblHosgeldin.Size = new System.Drawing.Size(164, 29);
-            this.lblHosgeldin.TabIndex = 0;
-            this.lblHosgeldin.Text = "Hoşgeldiniz,";
-            this.lblHosgeldin.Click += new System.EventHandler(this.lblHosgeldin_Click);
             // 
             // panel1
             // 
@@ -98,92 +80,30 @@
             this.panel2.Controls.Add(this.lblBorc);
             this.panel2.Location = new System.Drawing.Point(6, 105);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(725, 54);
+            this.panel2.Size = new System.Drawing.Size(725, 83);
             this.panel2.TabIndex = 2;
             // 
             // btnOdemeYap
             // 
             this.btnOdemeYap.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(64)))), ((int)(((byte)(128)))));
             this.btnOdemeYap.ForeColor = System.Drawing.Color.White;
-            this.btnOdemeYap.Location = new System.Drawing.Point(519, 12);
+            this.btnOdemeYap.Location = new System.Drawing.Point(528, 21);
             this.btnOdemeYap.Name = "btnOdemeYap";
             this.btnOdemeYap.Size = new System.Drawing.Size(148, 36);
             this.btnOdemeYap.TabIndex = 1;
             this.btnOdemeYap.Text = "Ödeme Yap";
             this.btnOdemeYap.UseVisualStyleBackColor = false;
+            this.btnOdemeYap.Click += new System.EventHandler(this.btnOdemeYap_Click);
             // 
             // lblBorc
             // 
             this.lblBorc.AutoSize = true;
             this.lblBorc.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblBorc.Location = new System.Drawing.Point(36, 19);
+            this.lblBorc.Location = new System.Drawing.Point(35, 28);
             this.lblBorc.Name = "lblBorc";
             this.lblBorc.Size = new System.Drawing.Size(151, 20);
             this.lblBorc.TabIndex = 0;
             this.lblBorc.Text = "Toplam Borcunuz: ";
-            // 
-            // dataGridViewOdemeler
-            // 
-            this.dataGridViewOdemeler.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridViewOdemeler.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.colAy,
-            this.colYil,
-            this.colTutar,
-            this.colDurum});
-            this.dataGridViewOdemeler.Location = new System.Drawing.Point(9, 193);
-            this.dataGridViewOdemeler.Name = "dataGridViewOdemeler";
-            this.dataGridViewOdemeler.RowHeadersWidth = 51;
-            this.dataGridViewOdemeler.RowTemplate.Height = 24;
-            this.dataGridViewOdemeler.Size = new System.Drawing.Size(647, 145);
-            this.dataGridViewOdemeler.TabIndex = 3;
-            // 
-            // colAy
-            // 
-            this.colAy.HeaderText = "Ay";
-            this.colAy.MinimumWidth = 6;
-            this.colAy.Name = "colAy";
-            this.colAy.Width = 125;
-            // 
-            // colYil
-            // 
-            this.colYil.HeaderText = "Yıl";
-            this.colYil.MinimumWidth = 6;
-            this.colYil.Name = "colYil";
-            this.colYil.Width = 125;
-            // 
-            // colTutar
-            // 
-            this.colTutar.HeaderText = "Tutar";
-            this.colTutar.MinimumWidth = 6;
-            this.colTutar.Name = "colTutar";
-            this.colTutar.Width = 125;
-            // 
-            // colDurum
-            // 
-            this.colDurum.HeaderText = "Durum";
-            this.colDurum.MinimumWidth = 6;
-            this.colDurum.Name = "colDurum";
-            this.colDurum.Width = 125;
-            // 
-            // panel3
-            // 
-            this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(128)))), ((int)(((byte)(192)))));
-            this.panel3.Controls.Add(this.label7);
-            this.panel3.Location = new System.Drawing.Point(9, 165);
-            this.panel3.Name = "panel3";
-            this.panel3.Size = new System.Drawing.Size(647, 28);
-            this.panel3.TabIndex = 4;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label7.ForeColor = System.Drawing.Color.White;
-            this.label7.Location = new System.Drawing.Point(14, 6);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(116, 18);
-            this.label7.TabIndex = 0;
-            this.label7.Text = "Son Ödemeler";
             // 
             // panel4
             // 
@@ -192,7 +112,7 @@
             this.panel4.Controls.Add(this.label3);
             this.panel4.Controls.Add(this.label2);
             this.panel4.Controls.Add(this.label1);
-            this.panel4.Location = new System.Drawing.Point(547, 347);
+            this.panel4.Location = new System.Drawing.Point(534, 339);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(177, 122);
             this.panel4.TabIndex = 5;
@@ -240,7 +160,7 @@
             this.panel5.Controls.Add(this.panel6);
             this.panel5.Controls.Add(this.label8);
             this.panel5.ForeColor = System.Drawing.Color.White;
-            this.panel5.Location = new System.Drawing.Point(6, 347);
+            this.panel5.Location = new System.Drawing.Point(12, 208);
             this.panel5.Name = "panel5";
             this.panel5.Size = new System.Drawing.Size(499, 34);
             this.panel5.TabIndex = 6;
@@ -263,19 +183,31 @@
             // 
             // pnlDuyuru
             // 
-            this.pnlDuyuru.Controls.Add(this.lblDuyuru);
-            this.pnlDuyuru.Location = new System.Drawing.Point(9, 384);
+            this.pnlDuyuru.Controls.Add(this.linkDuyuru1);
+            this.pnlDuyuru.Controls.Add(this.linkDuyuru2);
+            this.pnlDuyuru.Location = new System.Drawing.Point(12, 248);
             this.pnlDuyuru.Name = "pnlDuyuru";
-            this.pnlDuyuru.Size = new System.Drawing.Size(496, 84);
+            this.pnlDuyuru.Size = new System.Drawing.Size(496, 108);
             this.pnlDuyuru.TabIndex = 8;
             // 
-            // lblDuyuru
+            // linkDuyuru1
             // 
-            this.lblDuyuru.BackColor = System.Drawing.Color.White;
-            this.lblDuyuru.Location = new System.Drawing.Point(-3, 0);
-            this.lblDuyuru.Name = "lblDuyuru";
-            this.lblDuyuru.Size = new System.Drawing.Size(499, 82);
-            this.lblDuyuru.TabIndex = 0;
+            this.linkDuyuru1.AutoSize = true;
+            this.linkDuyuru1.Location = new System.Drawing.Point(17, 28);
+            this.linkDuyuru1.Name = "linkDuyuru1";
+            this.linkDuyuru1.Size = new System.Drawing.Size(68, 16);
+            this.linkDuyuru1.TabIndex = 1;
+            this.linkDuyuru1.TabStop = true;
+            this.linkDuyuru1.Text = "linkLabel1";
+            this.linkDuyuru1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkDuyuru1_LinkClicked);
+            // 
+            // linkDuyuru2
+            // 
+            this.linkDuyuru2.BackColor = System.Drawing.Color.White;
+            this.linkDuyuru2.Location = new System.Drawing.Point(-3, 0);
+            this.linkDuyuru2.Name = "linkDuyuru2";
+            this.linkDuyuru2.Size = new System.Drawing.Size(499, 111);
+            this.linkDuyuru2.TabIndex = 0;
             // 
             // lblDaireBilgi
             // 
@@ -283,6 +215,15 @@
             this.lblDaireBilgi.Name = "lblDaireBilgi";
             this.lblDaireBilgi.Size = new System.Drawing.Size(135, 19);
             this.lblDaireBilgi.TabIndex = 9;
+            // 
+            // lblHosgeldin
+            // 
+            this.lblHosgeldin.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblHosgeldin.Location = new System.Drawing.Point(13, 13);
+            this.lblHosgeldin.Name = "lblHosgeldin";
+            this.lblHosgeldin.Size = new System.Drawing.Size(164, 29);
+            this.lblHosgeldin.TabIndex = 0;
+            this.lblHosgeldin.Text = "Hoşgeldiniz,";
             // 
             // frmKullaniciAnasayfa
             // 
@@ -293,37 +234,30 @@
             this.Controls.Add(this.pnlDuyuru);
             this.Controls.Add(this.panel5);
             this.Controls.Add(this.panel4);
-            this.Controls.Add(this.panel3);
-            this.Controls.Add(this.dataGridViewOdemeler);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.lblHosgeldin);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "frmKullaniciAnasayfa";
             this.Text = "frmKullaniciAnasayfa";
+            this.Load += new System.EventHandler(this.frmKullaniciAnasayfa_Load_1);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panel2.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewOdemeler)).EndInit();
-            this.panel3.ResumeLayout(false);
-            this.panel3.PerformLayout();
             this.panel4.ResumeLayout(false);
             this.panel4.PerformLayout();
             this.panel5.ResumeLayout(false);
             this.panel5.PerformLayout();
             this.pnlDuyuru.ResumeLayout(false);
+            this.pnlDuyuru.PerformLayout();
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private System.Windows.Forms.Label lblHosgeldin;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.DataGridView dataGridViewOdemeler;
-        private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Panel panel4;
         private System.Windows.Forms.Panel panel5;
         private System.Windows.Forms.Label label1;
@@ -333,15 +267,12 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Panel panel6;
         private System.Windows.Forms.Panel pnlDuyuru;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colAy;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colYil;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colTutar;
-        private System.Windows.Forms.DataGridViewTextBoxColumn colDurum;
-        private System.Windows.Forms.Label lblDuyuru;
+        private System.Windows.Forms.Label linkDuyuru2;
         private System.Windows.Forms.Label lblDaireBilgi;
+        private System.Windows.Forms.LinkLabel linkDuyuru1;
+        private System.Windows.Forms.Label lblHosgeldin;
     }
 }

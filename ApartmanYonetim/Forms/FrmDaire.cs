@@ -26,14 +26,19 @@ namespace ApartmanYonetim.Forms
         }
         private void FrmDaire_Load(object sender, EventArgs e)
         {
+            Tablo_dgv.DataError += (s, ed) => { ed.ThrowException = false; };
             Listele();
             Tablo_dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.DisplayedCells;
+            
         }
         void Listele()
         {
             Tablo_dgv.DataSource = null;
             Tablo_dgv.DataSource = dal.TumDaireleriGetir();
             Tablo_dgv.Columns["Id"].Visible = false;
+            if (Tablo_dgv.Columns["Id"] != null) Tablo_dgv.Columns["Id"].Visible = false;
+            if (Tablo_dgv.Columns["Resim"] != null) Tablo_dgv.Columns["Resim"].Visible = false;
+        
         }
 
         /*
@@ -83,7 +88,7 @@ namespace ApartmanYonetim.Forms
             // 2. RESİM KONTROLÜ
             if (string.IsNullOrEmpty(Resim_pb.ImageLocation))
             {
-                MessageBox.Show("Lütfen bir daire resmi seçiniz!", "Resim Eksik", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Lütfen bir resim seçiniz!", "Resim Eksik", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -98,7 +103,7 @@ namespace ApartmanYonetim.Forms
             // --- BURADAN SONRASI SADECE TÜM KONTROLLER GEÇERLİYSE ÇALIŞIR ---
 
             string sifre = PasswordGenerator.SifreUret();
-            string resimYolu = Resim_pb.ImageLocation;
+            byte[] secilenResimBytes = null;
 
             Daire daire = new Daire
             {
@@ -108,16 +113,16 @@ namespace ApartmanYonetim.Forms
                 Telefon = Telefon_txt.Text,
                 Email = Email_txt.Text,
                 Durum = Durum_cmb.Text,
-                Resim = resimYolu
-            };
+                Resim = secilenResimBytes
+            };   
 
             try
             {
                 MessageBox.Show("Giden Email: " + daire.Email);
-                dal.DaireEkle(daire);
+                int yeniDaireId = dal.DaireEkle(daire);
 
                 KullaniciDAL kulDal = new KullaniciDAL();
-                kulDal.KullaniciEkle(daire.Email, sifre, seciliId);
+                kulDal.KullaniciEkle(daire.AdSoyad, daire.Email, sifre, seciliId);
 
                 MailHelper.MailGonder(daire.Email, sifre);
 
@@ -139,6 +144,16 @@ namespace ApartmanYonetim.Forms
                 MessageBox.Show("Güncellenecek kayıt seçiniz");
                 return;
             }
+            byte[] secilenResimBytes = null;
+            if (System.IO.File.Exists(resimYolu))
+            {
+                secilenResimBytes = System.IO.File.ReadAllBytes(resimYolu);
+            }
+            else if (Tablo_dgv.CurrentRow.Cells["Resim"].Value != DBNull.Value)
+            {
+                // Eğer yeni resim seçilmediyse eski resmini korumak için tablodakini alıyoruz
+                secilenResimBytes = (byte[])Tablo_dgv.CurrentRow.Cells["Resim"].Value;
+            }
 
             Daire daire = new Daire
             {
@@ -149,7 +164,7 @@ namespace ApartmanYonetim.Forms
                 Telefon = Telefon_txt.Text,
                 Durum = Durum_cmb.Text,
                 Email=Email_txt.Text,
-                Resim = resimYolu
+                Resim = secilenResimBytes
             };
 
             dal.DaireGuncelle(daire);
@@ -237,15 +252,43 @@ namespace ApartmanYonetim.Forms
 
         private void Tablo_dgv_CellClick(object sender, DataGridViewCellEventArgs e)
         {
+            // Satır indeksinin geçerli olduğundan emin oluyoruz (başlığa tıklanırsa hata vermesin)
+            if (e.RowIndex < 0) return;
+
             seciliId = Convert.ToInt32(Tablo_dgv.CurrentRow.Cells[0].Value);
             DaireNo_txt.Text = Tablo_dgv.CurrentRow.Cells[1].Value.ToString();
             Kat_txt.Text = Tablo_dgv.CurrentRow.Cells[2].Value.ToString();
-            AdSoyad_txt.Text = Tablo_dgv.CurrentRow.Cells["AdSoyad"].Value.ToString();
-            Telefon_txt.Text = Tablo_dgv.CurrentRow.Cells["Telefon"].Value.ToString();
-            Durum_cmb.Text = Tablo_dgv.CurrentRow.Cells["Durum"].Value.ToString();
-            Email_txt.Text = Tablo_dgv.CurrentRow.Cells["Email"].Value.ToString();
-            Resim_pb.ImageLocation = Tablo_dgv.CurrentRow.Cells["Resim"].Value.ToString();
 
+            // Sütun isimlerinin tam eşleştiğinden emin olmak için önlem alıyoruz
+            AdSoyad_txt.Text = Tablo_dgv.CurrentRow.Cells["AdSoyad"].Value?.ToString() ?? "";
+            Telefon_txt.Text = Tablo_dgv.CurrentRow.Cells["Telefon"].Value?.ToString() ?? "";
+            Durum_cmb.Text = Tablo_dgv.CurrentRow.Cells["Durum"].Value?.ToString() ?? "";
+            Email_txt.Text = Tablo_dgv.CurrentRow.Cells["Email"].Value?.ToString() ?? "";
+
+            // GİZLİ SÜTUNLARDAN ETKİLENMEYEN GÜVENLİ RESİM GETİRME
+            try
+            {
+                // DataGridView içindeki bağlı olan orijinal Daire nesnesini çekiyoruz (Gizli olsa bile veriyi korur)
+                var seciliDaire = (Daire)Tablo_dgv.CurrentRow.DataBoundItem;
+
+                if (seciliDaire != null && seciliDaire.Resim != null && seciliDaire.Resim.Length > 0)
+                {
+                    using (System.IO.MemoryStream ms = new System.IO.MemoryStream(seciliDaire.Resim))
+                    {
+                        Resim_pb.Image = Image.FromStream(ms);
+                    }
+                    resimYolu = ""; // Yeni bir resim seçilene kadar yolu temiz tutuyoruz
+                }
+                else
+                {
+                    Resim_pb.Image = null; // Eğer kullanıcının resmi yoksa PictureBox'ı temizle
+                }
+            }
+            catch
+            {
+                // Eski bozuk verilerden biri gelirse veya dönüştürme hatası olursa videoda çökmesin diye boş bırakıyoruz
+                Resim_pb.Image = null;
+            }
         }
 
         private void FrmDaire_Load_1(object sender, EventArgs e)

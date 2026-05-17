@@ -1,6 +1,7 @@
 ﻿using ApartmanYonetim.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -27,28 +28,38 @@ namespace ApartmanYonetim.DAL
                 {
                     liste.Add(new Daire
                     {
-                        Id = (int)dr["Id"],
-                        DaireNo = dr["DaireNo"].ToString(),
-                        Kat = (int)dr["Kat"],
-                        AdSoyad = dr["AdSoyad"].ToString(),
-                        Telefon = dr["Telefon"].ToString(),
-                        Email = dr["Email"].ToString(),
-                        Durum = dr["Durum"].ToString(),
-                        Resim = dr["Resim"].ToString()
+                        // Id alanı boş olamaz ama yine de sağlama alıyoruz
+                        Id = dr["Id"] == DBNull.Value ? 0 : Convert.ToInt32(dr["Id"]),
 
+                        DaireNo = dr["DaireNo"] == DBNull.Value ? "" : dr["DaireNo"].ToString(),
+
+                        // İŞTE HATA VEREN KAT ALANI: Eğer veritabanında boşsa (NULL) çökme, varsayılan olarak 0 yaz diyoruz
+                        Kat = dr["Kat"] == DBNull.Value ? 0 : Convert.ToInt32(dr["Kat"]),
+
+                        AdSoyad = dr["AdSoyad"] == DBNull.Value ? "" : dr["AdSoyad"].ToString(),
+                        Telefon = dr["Telefon"] == DBNull.Value ? "" : dr["Telefon"].ToString(),
+                        Email = dr["Email"] == DBNull.Value ? "" : dr["Email"].ToString(),
+                        Durum = dr["Durum"] == DBNull.Value ? "" : dr["Durum"].ToString(),
+
+                        // Resim alanı boşsa null, doluysa byte[] olarak güvenle alınıyor
+                        Resim = dr["Resim"] == DBNull.Value ? null : (byte[])dr["Resim"]
                     });
                 }
             }
             return liste;
         }
 
-        public void DaireEkle(Daire daire)
+        public int DaireEkle(Daire daire)
         {
             using (SqlConnection conn = db.GetConnection())
             {
                 conn.Open();
 
-                string query = "INSERT INTO Daireler (DaireNo, Kat, AdSoyad, Telefon, Email, Durum, Resim) VALUES (@no,@kat,@adsoyad,@telefon,@email,@durum,@resim)";
+                string query = @"
+        INSERT INTO Daireler (DaireNo, Kat, AdSoyad, Telefon, Email, Durum, Resim) 
+        VALUES (@no,@kat,@adsoyad,@telefon,@email,@durum,@resim);
+        SELECT SCOPE_IDENTITY();";
+
                 SqlCommand cmd = new SqlCommand(query, conn);
 
                 cmd.Parameters.AddWithValue("@no", daire.DaireNo);
@@ -57,8 +68,9 @@ namespace ApartmanYonetim.DAL
                 cmd.Parameters.AddWithValue("@telefon", daire.Telefon);
                 cmd.Parameters.AddWithValue("@email", daire.Email);
                 cmd.Parameters.AddWithValue("@durum", daire.Durum);
-                cmd.Parameters.AddWithValue("@resim", daire.Resim);
-                cmd.ExecuteNonQuery();
+                cmd.Parameters.Add("@resim", SqlDbType.VarBinary).Value = (object)daire.Resim ?? DBNull.Value;
+                int yeniId = Convert.ToInt32(cmd.ExecuteScalar());
+                return yeniId;
             }
         }
         public void DaireGuncelle(Daire daire)
@@ -75,7 +87,7 @@ namespace ApartmanYonetim.DAL
                 cmd.Parameters.AddWithValue("@telefon", daire.Telefon);
                 cmd.Parameters.AddWithValue("@durum", daire.Durum);
                 cmd.Parameters.AddWithValue("@email", daire.Email);
-                cmd.Parameters.AddWithValue("@resim", daire.Resim ?? "");
+                cmd.Parameters.Add("@resim", SqlDbType.VarBinary).Value = (object)daire.Resim ?? DBNull.Value;
                 cmd.ExecuteNonQuery();
 
             }

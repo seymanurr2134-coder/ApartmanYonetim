@@ -73,7 +73,8 @@
             this.dgvBorclar.RowTemplate.Height = 24;
             this.dgvBorclar.Size = new System.Drawing.Size(641, 150);
             this.dgvBorclar.TabIndex = 3;
-            this.dgvBorclar.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvBorclar_CellContentClick);
+            this.dgvBorclar.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvBorclar_CellClick);
+            this.dgvBorclar.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgvBorclar_CellFormatting);
             // 
             // btnOdemeYap
             // 

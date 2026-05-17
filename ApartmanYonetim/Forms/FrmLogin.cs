@@ -20,6 +20,7 @@ namespace ApartmanYonetim.Forms
         {
             InitializeComponent();
             this.Load += FrmLogin_Load;
+
         }
         
         private void FrmLogin_Load(object sender, EventArgs e)
@@ -107,19 +108,21 @@ namespace ApartmanYonetim.Forms
             ********************************************************** */
 
             KullaniciDAL dal = new KullaniciDAL();
+            
+
 
             // EMail ve Sifre textbox'larından veriyi alıyoruz
             var kullanici = dal.Login(EMail.Text, Sifre.Text);
 
-            if (kullanici != null) // Giriş başarılıysa bu blok çalışır
+            if (kullanici != null ) // Giriş başarılıysa bu blok çalışır
             {
                 MessageBox.Show("Giriş başarılı");
 
                 // Global değişkenleri dolduruyoruz
                 Program.AktifKullaniciAdSoyad = kullanici.KullaniciAdi;
                 Program.AktifKullaniciId = kullanici.Id;
-                Program.AktifDaireId = kullanici.DaireId;
-
+                Program.AktifDaireId = kullanici.Id;
+                Program.AktifKullaniciEmail = kullanici.Email;
 
                 // EĞER ŞİFRE SIFIRLANDI MI KONTROLÜ YAPMAK İSTERSEN:
                 // (Veritabanına 'SifreSifirlandiMi' sütunu eklediysen burayı kullanabilirsin)

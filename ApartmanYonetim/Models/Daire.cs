@@ -15,7 +15,6 @@ namespace ApartmanYonetim.Models
         public string Telefon { get; set; }
         public string Email { get; set; }
         public string Durum { get; set; } // Ev Sahibi / Kiracı
-        public string Resim {  get; set; }
-        
+        public byte[] Resim { get; set; }
     }
 }
